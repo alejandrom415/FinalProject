@@ -8,13 +8,17 @@ public class NonPlayerCharacter : MonoBehaviour
     public float displayTime = 4.0f;
     public GameObject dialogBox;
     float timerDisplay;
-
     public Text gameoverText;
-
+    public AudioClip activateSound;
+    AudioSource audioSource;
+   
     void Start()
     {
         dialogBox.SetActive(false);
         timerDisplay = -1.0f;
+
+        audioSource = GetComponent<AudioSource>();
+        audioSource.loop = false;
     }
 
     void Update()
@@ -27,16 +31,14 @@ public class NonPlayerCharacter : MonoBehaviour
                 dialogBox.SetActive(false);
             }
         }
-
-        if (gameoverText.text == "Talk to Jambi to visit Stage 2!")
-        {
-            //teleport to stage 2
-        }
     }
 
     public void DisplayDialog()
     {
         timerDisplay = displayTime;
         dialogBox.SetActive(true);
+
+        audioSource.clip = activateSound;
+        audioSource.Play();
     }
 }

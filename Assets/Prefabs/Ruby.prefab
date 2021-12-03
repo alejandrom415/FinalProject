@@ -102,11 +102,13 @@ MonoBehaviour:
   gameoverText: {fileID: 0}
   ammoText: {fileID: 0}
   scoreText: {fileID: 0}
+  progressText: {fileID: 0}
   speed: 5
-  maxHealth: 0
+  maxHealth: 5
+  minHealth: 0
   ammo: 0
   score: 0
-  BrokenRobots: 0
+  progress: 0
   projectilePrefab: {fileID: 1849245898650271598, guid: 2552272d44217479b8956a28619048ff,
     type: 3}
   hiteffectPrefab: {fileID: 9134667281813160620, guid: 25c4eee8ed64f4508824d7b6d347ee30,
@@ -117,6 +119,7 @@ MonoBehaviour:
   hitSound: {fileID: 8300000, guid: a6778a73d5b00684fb04dc5920c83a7c, type: 3}
   winSound: {fileID: 8300000, guid: 07533f4bb1f28b44080c57706638a993, type: 3}
   loseSound: {fileID: 8300000, guid: 79615b55e88d2402cb59d361d74810ce, type: 3}
+  powerupSound: {fileID: 8300000, guid: 3e5fc449f12524f3c90827377ee29c61, type: 3}
   ammopickupSound: {fileID: 8300000, guid: bc3793bcaa2f3da4cbf0851a8d6c5dfa, type: 3}
   timeInvincible: 2
 --- !u!50 &-3095219117304129653

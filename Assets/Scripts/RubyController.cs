@@ -2,56 +2,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class RubyController : MonoBehaviour
 {
     public Text gameoverText;
-
     public Text ammoText;
-
     public Text scoreText;
-
-    public float speed = 3.0f;
-
+    public Text progressText;
+    public float speed = 4.0f;
+    public float boostTimer;
+    public bool boosting;
     public int maxHealth = 5;
-
     public int minHealth = 0;
-
     public int ammo;
-
     public int score;
-
-    public int BrokenRobots;
-
+    public int progress;
     public GameObject projectilePrefab;
-
     public GameObject hiteffectPrefab;
-
     public GameObject healtheffectPrefab;
-
     public AudioClip throwSound;
     public AudioClip hitSound;
-
     public AudioClip winSound;
     public AudioClip loseSound;
-
+    public AudioClip powerupSound;
     public AudioClip ammopickupSound;
-
     public int health { get { return currentHealth; } }
     int currentHealth;
-
     public float timeInvincible = 2.0f;
     bool isInvincible;
     float invincibleTimer;
-
     Rigidbody2D rigidbody2d;
     float horizontal;
     float vertical;
-
     Animator animator;
     Vector2 lookDirection = new Vector2(1, 0);
-
     AudioSource audioSource;
 
     void Start()
@@ -61,17 +45,21 @@ public class RubyController : MonoBehaviour
 
         currentHealth = maxHealth;
 
+        boostTimer = 0;
+
+        boosting = false;
+
         audioSource = GetComponent<AudioSource>();
 
         gameoverText.text = "";
 
         ammo = 4;
-
         SetAmmoText();
 
         score = 0;
-
         SetScoreText();
+
+        progressText.text = "";
     }
 
     void Update()
@@ -119,6 +107,25 @@ public class RubyController : MonoBehaviour
                         gameoverText.text = "";
                     }
                 }
+                CatController cat = hit.collider.GetComponent<CatController>();
+                if (cat != null)
+                {
+                    cat.DisplayDialog();
+                    
+                    progress = 0;
+                    SetProgressText();
+                }
+            }
+        }
+
+        if (boosting)
+        {
+            boostTimer += Time.deltaTime;
+            if (boostTimer >= 4)
+            {
+                speed = 4.0f;
+                boostTimer = 0;
+                boosting = false;
             }
         }
 
@@ -137,7 +144,6 @@ public class RubyController : MonoBehaviour
         {
             GameOver();
         }
-
     }
 
     void FixedUpdate()
@@ -186,7 +192,6 @@ public class RubyController : MonoBehaviour
             animator.SetTrigger("Launch");
 
             ammo = ammo - 1;
-
             SetAmmoText();
 
             PlaySound(throwSound);
@@ -205,11 +210,28 @@ public class RubyController : MonoBehaviour
         if (collider.tag == "AmmoPickUp")
         {
             ammo = ammo + 4;
-
             SetAmmoText();
 
             audioSource.clip = ammopickupSound;
+            audioSource.Play();
 
+            Destroy(collider.gameObject);
+        }
+
+        if (collider.tag == "Dog")
+        {
+            progress = progress + 1;
+            SetProgressText();
+
+            Destroy(collider.gameObject);
+        }
+
+        if (collider.tag == "Power-Up")
+        {
+            boosting = true;
+            speed = 8.0f;
+
+            audioSource.clip = powerupSound;
             audioSource.Play();
 
             Destroy(collider.gameObject);
@@ -239,9 +261,9 @@ public class RubyController : MonoBehaviour
             audioSource.loop = false;
         }
 
-        if (score >= 6)
+        if (score >= 6 && progress >= 3)
         {
-            gameoverText.text = "You Win! - A Game by Alejandro Morales Press R to Restart";
+            gameoverText.text = "You Win! - A Game by Alejandro Morales Press ESC to Quit";
 
             speed = 0;
 
@@ -250,22 +272,17 @@ public class RubyController : MonoBehaviour
             audioSource.clip = winSound;
             audioSource.Play();
             audioSource.loop = false;
-
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                SceneManager.LoadScene("Main");
-            }
         }
+    }
+
+    void SetProgressText()
+    {
+        progressText.text = "Dogs Helped: " + progress.ToString();
     }
     
     void GameOver()
     {
-        gameoverText.text = "You Lose! - Press R to Restart or ESC to Quit";
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            SceneManager.LoadScene("Main");
-        }
+        gameoverText.text = "You Lose! - Press ESC to Quit";
             
         Destroy(gameObject.GetComponent<Collider>());
         isInvincible = true;
